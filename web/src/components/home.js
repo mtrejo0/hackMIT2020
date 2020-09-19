@@ -1,39 +1,56 @@
 import React from 'react'
-import { InputGroup, InputGroupAddon, InputGroupText, Input } from 'reactstrap';
+import { Input } from 'reactstrap';
+import BookDisplay from "./bookDisplay";
 
 class Home extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            books: []
+            books: [],
+            search: '',
+            loading: false
         }
     }
 
-    async componentDidMount() {
+    async fetchBooks(){
+        this.setState({...this.state,loading: true})
         try {
-            const baseURL = 'https://openlibrary.org/';
-            let queryURL = baseURL + "search.json?q=" ;
-            queryURL += 'Pride and Prejudice'
-            const response = await fetch(queryURL);
+            const baseURL = 'http://gutendex.com';
+            let queryURL = baseURL + '/books?search='
+            queryURL += this.state.search;
+            console.log(encodeURI(queryURL))
+            const response = await fetch(encodeURI(queryURL));
             let responseJson = await response.json();
-            this.setState({...this.state,books: responseJson.docs})
+            console.log(responseJson)
+            this.setState({...this.state,books: responseJson.results,loading: false})
         } catch (error) {
             console.log(error)
+            this.setState({...this.state,loading: false})
         }
     }
 
     render() {
         return (
             <div style={{padding:'32px'}}>
-                <Input onChange={ x => console.log(x)}></Input>
-                {this.state.books.map( book => {
-                    console.log(book);
-                    return (
-                        <div>
-                            <p>{book.title}</p>
-                        </div>);
-                })}
+
+                <Input type="text" onChange={
+                    event => {
+                        this.state.search = event.target.value;
+                    }}
+                    />
+                <button onClick={event => this.fetchBooks()}>Submit</button>
+
+                {
+                    this.state.loading ? <p> Loading... </p> :
+                        this.state.books.map( (book,index) => {
+                            console.log(book)
+                            return (
+                                <div key={index}>
+                                    <BookDisplay book={book}/>
+                                </div>);
+                        })
+                }
             </div>
         );
     }

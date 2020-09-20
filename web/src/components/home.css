@@ -1,0 +1,12 @@
+.wrapper {
+    margin: 16px;
+    padding: 16px;
+    border-radius: 32px;
+    box-shadow: 4px 4px 4px 4px #ddd;
+
+}
+
+.input{
+    display: flex;
+    align-items: center;
+}

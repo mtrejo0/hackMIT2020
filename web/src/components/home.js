@@ -1,5 +1,5 @@
 import React from 'react'
-import { Input } from 'reactstrap';
+import { Input, Button } from 'reactstrap';
 import BookDisplay from "./bookDisplay";
 
 class Home extends React.Component {
@@ -33,14 +33,15 @@ class Home extends React.Component {
     render() {
         return (
             <div style={{padding:'32px'}}>
-
-                <Input type="text" onChange={
-                    event => {
-                        this.state.search = event.target.value;
-                    }}
-                    />
-                <button onClick={event => this.fetchBooks()}>Submit</button>
-
+                <div className={'input'}>
+                    <Input type="text" onChange={
+                        event => {
+                            this.state.search = event.target.value;
+                        }}
+                        />
+                    {''}
+                    <Button color="primary" onClick={event => this.fetchBooks()}>Submit</Button>
+                </div>
                 {
                     this.state.loading ? <p> Loading... </p> :
                         this.state.books.map( (book,index) => {

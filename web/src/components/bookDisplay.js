@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from 'reactstrap';
 import './home.css'
+import Analyze from "./analyze";
 class BookDisplay extends React.Component {
 
     constructor(props) {
@@ -10,7 +11,7 @@ class BookDisplay extends React.Component {
             expand: true,
             text: '',
             loading: false,
-            analyze: ''
+            analyze: '',
         }
     }
     async fetchText(){
@@ -39,22 +40,7 @@ class BookDisplay extends React.Component {
     }
 
     async analyze() {
-
-        try {
-            const baseURL = 'https://cors-anywhere.herokuapp.com/https://hackmit2020.herokuapp.com/768';
-            let queryURL = baseURL + this.state.book.id
-
-            let that = this;
-            await fetch(encodeURI(queryURL))
-                .then(function(response) {
-                    return response.text();
-                })
-                .then(function(data) {
-                    that.setState({analyze: data})
-                });
-        } catch (error) {
-            console.log('error')
-        }
+        this.setState({analyze: false})
     }
 
     render() {
@@ -63,14 +49,19 @@ class BookDisplay extends React.Component {
             <div className={'wrapper'}>
                 <h3>{book.title}</h3>
                 {book.authors.map( (author,index) =>  <p key={index}>{author.name}</p>)}
-                <Button color={'secondary'} onClick={ x => this.analyze()}> Analyze Text </Button>
+                <Button outline color={'primary'} onClick={ x => this.analyze()}> Analyze Text </Button>
                 {'  '}
                 {'  '}
-                <Button color={'primary'} onClick={ x => this.fetchText()}> See Text </Button>
+                <Button outline color={'primary'} onClick={ x => this.fetchText()}> See Text </Button>
+                <br/>
                 <br/>
                 {this.state.loading ?  <p> Loading... </p> : null}
                 {this.state.expand ? <p>{this.state.text.substring(0,1000)}</p> : null}
-                <p>{this.state.analyze}</p>
+                {this.state.analyze !== '' ?
+                    <Analyze id={book.id}></Analyze>
+                    : null}
+
+
             </div>
         );
     }

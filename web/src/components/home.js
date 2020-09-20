@@ -32,7 +32,7 @@ class Home extends React.Component {
 
     render() {
         return (
-            <div style={{padding:'32px'}}>
+            <div style={{padding:'32px'}} className={'back'}>
                 <div className={'input'}>
                     <Input type="text" onChange={
                         event => {

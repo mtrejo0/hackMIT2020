@@ -1,11 +1,35 @@
 import React from 'react'
+import axios from 'axios';
+
 import './home.css'
-import { PieChart } from 'react-minimal-pie-chart';
+import PieChart from './PieChart.js';
+
 
 class Analyze extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            id: props.id,
+            book: null,
+            loading: true
+        }
+    }
+
+    componentDidMount() {
+        this.fetchBook()
+    }
+
+    async fetchBook(){
+        let id = this.state.id
+        const url = `http://localhost:5000/book/${id}`;
+        axios.get(url)
+            .then(res => {
+                this.setState({book: res.data, loading: false})
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
 
@@ -28,9 +52,13 @@ class Analyze extends React.Component {
 
                     
         return (
-
+            this.state.loading ? <p> Loading... </p> :
             <div>
-                <img src={book.pic}/>
+                <h1>Most Common Words</h1>
+                <p>{JSON.stringify(this.state.book.common_words)}</p>
+                <p>{JSON.stringify(this.state.book.pie)}</p>
+                <PieChart data={{'values': this.state.book.pie}} />
+                {/* <img src={book.pic}/>
                 <h1>Most Common Words</h1>
                 <p>{JSON.stringify(book.mcw)}</p>
 
@@ -56,7 +84,7 @@ class Analyze extends React.Component {
                 />
                 <br/>
                 <br/>
-                <br/>
+                <br/> */}
 
             </div>
         );

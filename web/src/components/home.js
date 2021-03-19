@@ -1,6 +1,9 @@
 import React from 'react'
+import axios from 'axios';
+
 import { Input, Button } from 'reactstrap';
 import BookDisplay from "./bookDisplay";
+
 
 class Home extends React.Component {
 
@@ -15,19 +18,16 @@ class Home extends React.Component {
 
     async fetchBooks(){
         this.setState({...this.state,loading: true})
-        try {
-            const baseURL = 'http://gutendex.com';
-            let queryURL = baseURL + '/books?search='
-            queryURL += this.state.search;
-            console.log(encodeURI(queryURL))
-            const response = await fetch(encodeURI(queryURL));
-            let responseJson = await response.json();
-            console.log(responseJson)
-            this.setState({...this.state,books: responseJson.results,loading: false})
-        } catch (error) {
-            console.log(error)
-            this.setState({...this.state,loading: false})
-        }
+        const baseURL = 'https://gutendex.com';
+        let queryURL = baseURL + '/books?search='
+        queryURL += this.state.search;
+        axios.get(queryURL)
+        .then(res => {
+            this.setState({...this.state, books: res.data.results,loading: false})
+        })
+        .catch(err => {
+            console.log(err)
+        })
     }
 
     render() {
@@ -44,13 +44,12 @@ class Home extends React.Component {
                 </div>
                 {
                     this.state.loading ? <p> Loading... </p> :
-                        this.state.books.map( (book,index) => {
-                            console.log(book)
-                            return (
-                                <div key={index}>
-                                    <BookDisplay book={book}/>
-                                </div>);
-                        })
+                    this.state.books.map( (book,index) => {
+                        return (
+                            <div key={index}>
+                                <BookDisplay book={book}/>
+                            </div>);
+                    })
                 }
             </div>
         );

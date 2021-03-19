@@ -1,6 +1,6 @@
 import random
 import nltk
-from urllib import request
+import requests
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk import FreqDist
 #nltk.download('popular')
@@ -12,9 +12,8 @@ full_url = url_start + bookid + "/" + bookid + ".txt"
 
 #create  Text object
 def grab_text_and_process(full_url):
-    response = request.urlopen(full_url)
-    raw = response.read().decode('utf8')
-    tokens = nltk.word_tokenize(raw)
+    r = requests.get(full_url)
+    tokens = nltk.word_tokenize(r.text)
     text = nltk.Text(tokens)
     return text
 
@@ -70,29 +69,50 @@ def top_num(w, num="10"):
     return w[:num]
 
 def piechart(postag, numwords):
-    dic = {}
+    pie = []
     count = 0
-    pn = len(only_pos(postag, "NN"))/numwords
-    dic["NN"] = pn
-    count += pn
-    pn = len(only_pos(postag, "JJ"))/numwords
-    dic["ADJ"] = pn
-    count += pn
-    pn = len(only_pos(postag, "VB"))/numwords
-    dic["VB"] = pn
-    count += pn
-    pn = len(only_pos(postag, "RB"))/numwords
-    dic["ADV"] = pn
-    count += pn
-    dic["OTHER"] = count
-    return dic
 
-text = grab_text_and_process(full_url)
-postag = pos_tagged(text)
-num = num_words_total(text)
-#print(top_10(only_pos(postag)))
-print(common_words_50(only_pos(postag)))
-print(piechart(postag, num))
+    pn = len(only_pos(postag, "NN"))/numwords
+    pie += [{"category": "NN", "value": pn}]
+    count += pn
+
+    pn = len(only_pos(postag, "JJ"))/numwords
+    pie += [{"category": "ADJ", "value": pn}]
+    count += pn
+
+    pn = len(only_pos(postag, "VB"))/numwords
+    pie += [{"category": "VB", "value": pn}]
+    count += pn
+
+    pn = len(only_pos(postag, "RB"))/numwords
+    pie += [{"category": "ADV", "value": pn}]
+    count += pn
+
+    pie += [{"category": "OTHER", "value": count}]
+
+    return pie
+
+
+def analyse_book(id):
+    url_start = "https://www.gutenberg.org/files/"
+    full_url = url_start + id + "/" + id + "-0.txt"
+    print(full_url)
+    text = grab_text_and_process(full_url)
+    postag = pos_tagged(text)
+    num = num_words_total(text)
+    data = {
+        'common_words': common_words_50(only_pos(postag)),
+        'pie': piechart(postag, num)
+    }
+    return data
+
+
+# text = grab_text_and_process(full_url)
+# postag = pos_tagged(text)
+# num = num_words_total(text)
+# print(top_10(only_pos(postag)))
+# print(common_words_50(only_pos(postag)))
+# print(piechart(postag, num))
 
 '''
 possibliities with these functions:

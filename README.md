@@ -1,4 +1,3 @@
 # hackMIT2020
 
-tquero bien mucho
-flipping simp
+input a book title and see the breakdown of sentiment and words used
